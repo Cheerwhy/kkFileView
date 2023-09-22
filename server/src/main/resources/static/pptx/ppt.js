@@ -104,6 +104,17 @@ $(document).ready(function () {
     } catch (err) {
 
     }
+
+    var page = getParameterByName("page");
+    if (page) {
+        curSlide = page;
+        gotoSlide(curSlide);
+    }
+    // 获取url中的名为page的参数
+    function getParameterByName(name){
+        var match = location.search.match(new RegExp('\\?' + name + '=([^&]+)'));
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
 });
 
 var remainContentInterval;
