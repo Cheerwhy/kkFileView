@@ -148,24 +148,6 @@
             </form>
         </div>
     </div>
-    <#--  删除吗弹窗  -->
-    <#if deleteCaptcha >
-        <div id="codeContent">  </div>
-    </#if>
-    <#--  预览测试  -->
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            <h3 class="panel-title">上传本地文件预览</h3>
-        </div>
-        <div class="panel-body">
-            <#if fileUploadDisable == false>
-                <form enctype="multipart/form-data" id="fileUpload">
-                    <input type="file" id="size" name="file"/> <input class="btn btn-success" type="button" id="btnSubmit" value=" 上 传 "/>
-                </form>
-            </#if>
-            <table id="table" data-pagination="true"></table>
-        </div>
-    </div>
 </div>
 
 <div class="loading_container">
@@ -190,116 +172,10 @@
         </div>
     </div>
 </div>
-<#if beian?? && beian != "default">
-    <div style="display: grid; place-items: center;">
-        <div>
-            <a target="_blank"  href="https://beian.miit.gov.cn/">${beian}</a>
-        </div>
-    </div>
-</#if>
 <script>
-    <#if deleteCaptcha >
-    function deleteFile(fileName) {
-        var codename =`<div class="code"><h4>请输入下面删除码!</h4><div><img id="verImg" width="130px" height="48px" src="/deleteFile/captcha"></div><form><input type="type" oninput="if(value.length>5)value=value.slice(0,5);" class="code-input"  id="_code" placeholder="请输入验证码"><button id="deleteFile1" type="button" class="btn btn-success">提交</button></form><button id="close" type="button" class="btn btn-danger">关闭</button></div>`;
-        $('#codeContent').html(codename);
-        var code = document.querySelector('.code');
-        var closeBtn = document.getElementById("close");
-        closeBtn.addEventListener('click', hidePopup);
-        function hidePopup(){
-            code.style.display = 'none';
-        }
-        var closedelete = document.getElementById("deleteFile1");
-        closedelete.addEventListener('click', deleteFile1);
-        function deleteFile1(){
-            var password = $("#_code").val();
-            $.ajax({
-                url: '${baseUrl}deleteFile?fileName=' + fileName +'&password='+password,
-                success: function (data) {
-                    if ("删除文件失败，密码错误！" === data.msg) {
-                        alert(data.msg);
-                    } else {
-                        //刷新验证码
-                        document.getElementById('verImg').click();
-                        $('#table').bootstrapTable('refresh', {});
-                        code.style.display = 'none';
-                    }
-                },
-                error: function (data) {
-                    return false;
-                }
-            })
-        }
-        var windowUrl = window.URL || window.webkitURL; //处理浏览器兼容性
-        document.getElementById('verImg').onclick = function(e){
-            //1、创建ajax对象
-            var xhr = null;
-            try{
-                xhr = new XMLHttpRequest();
-            }catch(error){
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            //2、调用open
-            xhr.open("get", "/deleteFile/captcha", true);
-            xhr.responseType = "blob";
-            //3、调用send
-            xhr.send();
-            //4、等待数据响应
-            xhr.onreadystatechange = function(){
-                if(xhr.readyState == 4){
-                    //判断本次下载的状态码都是多少
-                    if(xhr.status == 200){
-                        var blob = this.response;
-                        $("#verImg").attr("src",windowUrl.createObjectURL(blob));
-                        //$('#verImg').attr('src', xhr.responseText);
-
-                        //  alert(windowUrl.createObjectURL(blob));
-                    }else{
-                        alert("Error:" + xhr.status);
-                    }
-                }
-            }
-        }
-
-    }
-    <#else>
-    function deleteFile(fileName,password) {
-        if(window.confirm('你确定要删除文件吗？')){
-            <#if deleteCaptcha >
-            password = prompt("请输入获取的验证码:");
-            <#else>
-            password = prompt("请输入默认密码:123456");
-            </#if>
-            $.ajax({
-                url: '${baseUrl}deleteFile?fileName=' + fileName +'&password='+password,
-                success: function (data) {
-                    // console.log(data);
-                    // 删除完成，刷新table
-                    if ("删除文件失败，密码错误！" === data.msg) {
-                        alert(data.msg);
-                    } else {
-
-                        $('#table').bootstrapTable('refresh', {});
-                    }
-                },
-                error: function (data) {
-                    return false;
-                }
-            })
-        }else{
-            return false;
-        }
-
-    }
-    </#if>
-
     function showLoadingDiv() {
         var height = window.document.documentElement.clientHeight - 1;
         $(".loading_container").css("height", height).show();
-    }
-
-    function onFileSelected() {
-        var file = $("#fileSelect").val();
-        $("#fileName").text(file);
     }
 
     function checkUrl(url) {
@@ -321,31 +197,6 @@
     }
 
     $(function () {
-        $('#table').bootstrapTable({
-            url: 'listFiles',
-            pageNumber: ${homePpageNumber},//初始化加载第一页
-            pageSize:${homePageSize}, //初始化单页记录数
-            pagination: ${homePagination}, //是否分页
-            pageList: [5, 10, 20, 30, 50, 100, 200, 500],
-            search: ${homeSearch}, //显示查询框
-            columns: [{
-                field: 'fileName',
-                title: '文件名'
-            }, {
-                field: 'action',
-                title: '操作'
-            }]
-        }).on('pre-body.bs.table', function (e, data) {
-            // 每个data添加一列用来操作
-            $(data).each(function (index, item) {
-                item.action = "<a class='btn btn-success' target='_blank' href='${baseUrl}onlinePreview?url=" + encodeURIComponent(Base64.encode('${baseUrl}' + item.fileName)) + "'>预览</a>" +
-                    "<a class='btn btn-danger' style='margin-left:10px;' href='javascript:void(0);' onclick='deleteFile(\"" +  encodeURIComponent(Base64.encode('${baseUrl}' + item.fileName)) + "\")'>删除</a>";
-            });
-            return data;
-        }).on('post-body.bs.table', function (e, data) {
-            return data;
-        });
-
         $('#previewByUrl').on('click', function () {
             var _url = $("#_url").val();
             if (!checkUrl(_url)) {
@@ -360,69 +211,7 @@
 
             window.open('${baseUrl}onlinePreview?url=' + encodeURIComponent(b64Encoded));
         });
-
-        $('#fileSelectBtn').on('click', function () {
-            $('#fileSelect').click();
-        });
-
-        $("#btnSubmit").click(function () {
-            var filepath = $("#size").val();
-            if(!checkFileSize(filepath)){
-                return false;
-            }
-            showLoadingDiv();
-            $("#fileUpload").ajaxSubmit({
-                success: function (data) {
-                    // 上传完成，刷新table
-                    if (1 === data.code) {
-                        alert(data.msg);
-                    } else {
-                        $('#table').bootstrapTable('refresh', {});
-                    }
-                    $("#fileName").text("");
-                    $(".loading_container").hide();
-                },
-                error: function () {
-                    alert('上传失败，请联系管理员');
-                    $(".loading_container").hide();
-                },
-                url: 'fileUpload', /*设置post提交到的页面*/
-                type: "post", /*设置表单以post方法提交*/
-                dataType: "json" /*设置返回值类型为文本*/
-            });
-        });
     });
-    function checkFileSize(filepath) {
-        var daxiao= "${size}";
-        daxiao= daxiao.replace("MB","");
-        // console.log(daxiao)
-        var maxsize = daxiao * 1024 * 1024;
-        var errMsg = "上传的文件不能超过${size}喔！！！";
-        var tipMsg = "您的浏览器暂不支持上传，确保上传文件不要超过${size}，建议使用IE、FireFox、Chrome浏览器";
-        try {
-            var filesize = 0;
-            var ua = window.navigator.userAgent;
-            if (ua.indexOf("MSIE") >= 1) {
-                //IE
-                var img = new Image();
-                img.src = filepath;
-                filesize = img.fileSize;
-            } else {
-                filesize = $("#size")[0].files[0].size; //byte
-            }
-            if (filesize > 0 && filesize > maxsize) {
-                alert(errMsg);
-                return false;
-            } else if (filesize == -1) {
-                alert(tipMsg);
-                return false;
-            }
-        } catch (e) {
-            alert("上传失败，请重试");
-            return false;
-        }
-        return true;
-    }
 </script>
 </body>
 </html>

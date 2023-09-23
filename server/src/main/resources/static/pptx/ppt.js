@@ -110,11 +110,11 @@ $(document).ready(function () {
         curSlide = page;
         gotoSlide(curSlide);
     }
-    // 获取url中的名为page的参数
     function getParameterByName(name){
-        var match = location.search.match(new RegExp('\\?' + name + '=([^&]+)'));
-        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        var match = RegExp('[?&]' + name + '=([^&]*)(&|$)').exec(location.search);
+        return decodeURIComponent(match == null ? null : match[1]);
     }
+
 });
 
 var remainContentInterval;
