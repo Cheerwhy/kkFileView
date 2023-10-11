@@ -85,6 +85,7 @@
 <script src="pptx/idocv/idocv_common.min.js"></script>
 <script src="pptx/jquery.mobile-events.min.js"></script>
 <script src="pptx/ppt.js"></script>
+<script src="pptx/message.js"></script>
 <script>
     var resultData = {
         "code": 1,
