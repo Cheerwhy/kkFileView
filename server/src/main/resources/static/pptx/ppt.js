@@ -47,7 +47,7 @@ $(document).ready(function () {
         if (screenfull.isFullscreen) {
             $('.slide-img-container').css('background-color', 'black');
             $('.slide-img-container').contextMenu(true);
-            const slideContainer = document.querySelector('#slide-img-container');
+            const slideContainer = document.querySelector('.slide-img-container');
             document.body.style.overflow = 'hidden';
             slideContainer.style = 'position:fixed;left:0;right:0;top:0;bottom:0;z-index:99999;width:100%;height:100%';
         } else {
