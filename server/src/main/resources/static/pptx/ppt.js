@@ -1,3 +1,4 @@
+      
 /**
  * Copyright 2013 I Doc View
  * @author Godwin <I Doc View>
@@ -47,9 +48,6 @@ $(document).ready(function () {
         if (screenfull.isFullscreen) {
             $('.slide-img-container').css('background-color', 'black');
             $('.slide-img-container').contextMenu(true);
-            const slideContainer = document.querySelector('.slide-img-container');
-            document.body.style.overflow = 'hidden';
-            slideContainer.style = 'position:fixed;left:0;right:0;top:0;bottom:0;z-index:99999;width:100%;height:100%';
         } else {
             $('.slide-img-container').css('background-color', '');
             $('.slide-img-container').contextMenu(false);
@@ -66,6 +64,15 @@ $(document).ready(function () {
     $('.slide-img-container .ppt-turn-right-mask').click(function () {
         nextSlide();
     });
+
+    window.addEventListener('message', e => {
+        const { data } = e;
+        if (data === 'fullscreen') {
+            const slideContainer = document.querySelector('.slide-img-container');
+            document.body.style.overflow = 'hidden';
+            slideContainer.style = 'position:fixed;left:0;right:0;top:0;bottom:0;z-index:99999;width:100%;height:100%';
+        }
+    })
 
     // Right click (NOT supported in SOUGOU browser)
     /*
@@ -268,3 +275,5 @@ function gotoSlide(slide) {
 
 
 }
+
+    
