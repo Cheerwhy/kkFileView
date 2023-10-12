@@ -8,6 +8,7 @@
     <link href="pptx/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="pptx/idocv/idocv_common.min.css" rel="stylesheet">
     <link href="pptx/jquery.contextMenu.css" rel="stylesheet">
+    <link href="pptx/ppt.css" rel="stylesheet">
     <#--  手机端预览兼容  -->
     <script type="text/javascript">
         var windowWidth = document.documentElement.clientWidth;
@@ -85,7 +86,6 @@
 <script src="pptx/idocv/idocv_common.min.js"></script>
 <script src="pptx/jquery.mobile-events.min.js"></script>
 <script src="pptx/ppt.js"></script>
-<script src="pptx/message.js"></script>
 <script>
     var resultData = {
         "code": 1,
