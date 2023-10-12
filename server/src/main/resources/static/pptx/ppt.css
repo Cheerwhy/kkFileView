@@ -1,0 +1,8 @@
+.slide-img-container img {
+  box-shadow: none !important;
+}
+
+.img-polaroid {
+  border: none !important;
+  box-shadow: none !important;
+}
